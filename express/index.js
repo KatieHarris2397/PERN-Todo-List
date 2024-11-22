@@ -23,7 +23,7 @@ app.get("/api/getTodoList", (req, res) => {
         if (error) {
             throw error
         }
-        response.status(200).json(results.rows)
+        res.status(200).json(results.rows)
     })
 });
 
@@ -35,7 +35,7 @@ app.post("/api/addTodoList", (req, res) => {
         if (error) {
             throw error
         }
-        response.status(201).send(`User added with ID: ${results.rows[0].id}`)
+        res.status(201).send(`User added with ID: ${results.rows[0].id}`)
     })
 });
 
@@ -51,7 +51,7 @@ app.post("/api/updateTodoList/:id", (req, res) => {
             if (error) {
                 throw error
             }
-            response.status(200).send(`User modified with ID: ${id}`)
+            res.status(200).send(`User modified with ID: ${id}`)
         }
     )
 });
@@ -64,7 +64,7 @@ app.delete("/api/deleteTodoList/:id", (req, res) => {
         if (error) {
             throw error
         }
-        response.status(200).send(`User deleted with ID: ${id}`)
+        res.status(200).send(`User deleted with ID: ${id}`)
     })
 });
 
