@@ -31,7 +31,15 @@ jobs:
         id: owner_lowercase
         run: echo "owner_lowercase=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-      # Step 4: Build and Push Docker Images
+      # Step 4: Build the React app
+      - name: Install and Build React App
+        run: |
+          cd react/pern-todo-app
+          npm ci # Install dependencies (prefer ci for CI environments)
+          npm run build # Build the React app
+          cd ../../ # Return to home directory
+
+      # Step 5: Build and Push Docker Images
       - name: Build and Push React App Image
         run: |
           docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-react-todo:latest react/pern-todo-app
