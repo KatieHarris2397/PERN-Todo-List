@@ -29,7 +29,7 @@ app.get("/api/getTodoList", (req, res) => {
 
 // Add new task to the database
 app.post("/api/addTodoList", (req, res) => {
-    const { task, status, deadline } = request.body
+    const { task, status, deadline } = req.body
 
     pool.query('INSERT INTO todos (task, status, deadline) VALUES ($1, $2, $3) RETURNING *', [task, status, deadline], (error, results) => {
         if (error) {
@@ -42,7 +42,7 @@ app.post("/api/addTodoList", (req, res) => {
 // Update task fields (including deadline)
 app.post("/api/updateTodoList/:id", (req, res) => {
     const id = req.params.id;
-    const { task, status, deadline } = request.body
+    const { task, status, deadline } = req.body
 
     pool.query(
         'UPDATE todos SET task = $1, status = $2, deadline = $3 WHERE id = $4',
