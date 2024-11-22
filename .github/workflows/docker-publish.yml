@@ -1,4 +1,4 @@
-name: Build and Push PERN Docker Images on change to GHCR
+name: On Change, Build and Push PERN Docker Images to GHCR
 
 on:
   push:
@@ -94,6 +94,7 @@ jobs:
         id: react_version
         run: |
           REACT_TAGS=$(gh api \
+            -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
             -H "Accept: application/vnd.github.v3+json" \
             /user/packages/container/pern-react-todo/versions \
             | jq -r '.[].metadata.container.tags[]')
@@ -120,6 +121,7 @@ jobs:
         id: express_version
         run: |
           EXPRESS_TAGS=$(gh api \
+            -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
             -H "Accept: application/vnd.github.v3+json" \
             /user/packages/container/pern-express-todo/versions \
             | jq -r '.[].metadata.container.tags[]')
@@ -146,6 +148,7 @@ jobs:
         id: postgres_version
         run: |
           POSTGRES_TAGS=$(gh api \
+            -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
             -H "Accept: application/vnd.github.v3+json" \
             /user/packages/container/pern-react-todo/versions \
             | jq -r '.[].metadata.container.tags[]')
