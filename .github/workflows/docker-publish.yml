@@ -1,0 +1,43 @@
+name: Build and Push PERN Docker Images to GHCR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write  # Required to push images to GHCR
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Log in to GitHub Container Registry
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step 3: Build and Push Docker Images
+      - name: Build and Push React App Image
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/pern-react-todo:latest react/pern-todo-app
+          docker push ghcr.io/${{ github.repository_owner }}/pern-react-todo:latest
+
+      - name: Build and Push Express App Image
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/pern-express-todo:latest express
+          docker push ghcr.io/${{ github.repository_owner }}/pern-express-todo:latest
+
+      - name: Build and Push Postgres Image
+        run: |
+          docker build -t ghcr.io/${{ github.repository_owner }}/pern-postgres-todo:latest postgres
+          docker push ghcr.io/${{ github.repository_owner }}/pern-postgres-todo:latest
