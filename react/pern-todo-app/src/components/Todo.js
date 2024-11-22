@@ -96,7 +96,7 @@ function Todo() {
 
     function getTimestamp(inputDateTime) {
         // Convert the input value (string 'YYYY-MM-DDTHH:MM') into a Date object
-        const date = new Date(inputDateTime);  // Automatically considers local time
+        const date = new Date(inputDateTime);
 
         return date;
     }
