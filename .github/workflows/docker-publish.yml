@@ -1,4 +1,4 @@
-name: Build and Push PERN Docker Images to GHCR
+name: Build and Push PERN Docker Images on change to GHCR
 
 on:
   push:
@@ -26,55 +26,139 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 3: Convert repository owner to lowercase (docker image names must all be lowercase)
+      # Step 3: Install gh CLI
+      - name: Install gh CLI
+        run: |
+          sudo apt update
+          sudo apt install -y gh
+
+      # Step 4: Convert repository owner to lowercase (docker image names must all be lowercase)
       - name: Set repository owner lowercase
         id: owner_lowercase
         run: echo "owner_lowercase=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
-      # Step 4: Build the React app
+      # Step 5: Check for changes in react/pern-todo-app folder
+      - name: Check for changes in react/pern-todo-app
+        id: check_react_changes
+        run: |
+          git fetch --depth=2  # Fetch previous commit to check diff
+          if git diff --quiet HEAD^ HEAD -- react/pern-todo-app; then
+            echo "No changes in react/pern-todo-app"
+            echo "react_changed=false" >> $GITHUB_ENV
+          else
+            echo "Changes detected in react/pern-todo-app"
+            echo "react_changed=true" >> $GITHUB_ENV
+          fi
+
+      # Step 6: Build the React app if changes were detected
       - name: Install and Build React App
+        if: env.react_changed == 'true'
         run: |
           cd react/pern-todo-app
           npm ci # Install dependencies (prefer ci for CI environments)
           npm run build # Build the React app
           cd ../../ # Return to home directory
 
-      # Step 5: Install gh CLI
-      - name: Install gh CLI
+      # Step 7: Get the latest version of react image if changes were detected
+      - name: Fetch the latest version tag for react image
+        if: env.react_changed == 'true'
+        id: react_version
         run: |
-          sudo apt update
-          sudo apt install -y gh
-
-      # Step 6: Get the latest version
-      - name: Fetch the latest version tag
-        id: version
-        run: |
-          TAGS=$(gh api \
+          REACT_TAGS=$(gh api \
             -H "Accept: application/vnd.github.v3+json" \
-            /user/packages/container/${{ github.repository }}/versions \
+            /user/packages/container/pern-react-todo/versions \
             | jq -r '.[].metadata.container.tags[]')
 
-          LATEST_VERSION=$(echo "$TAGS" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
-          VERSION=${LATEST_VERSION:-"v0.0.0"}
+          LATEST_REACT_VERSION=$(echo "$REACT_TAGS" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
+          REACT_VERSION=${LATEST_REACT_VERSION:-"v0.0.0"}
 
-          IFS='.' read -r MAJOR MINOR PATCH <<<"${VERSION#v}"
-          NEW_VERSION="v$MAJOR.$MINOR.$((PATCH + 1))"
+          IFS='.' read -r MAJOR MINOR PATCH <<<"${REACT_VERSION#v}"
+          NEW_REACT_VERSION="v$MAJOR.$MINOR.$((PATCH + 1))"
 
-          echo "New version: $NEW_VERSION"
-          echo "new-version=$NEW_VERSION" >> $GITHUB_ENV
+          echo "New version: $NEW_REACT_VERSION"
+          echo "react-new-version=$NEW_REACT_VERSION" >> $GITHUB_ENV
 
-      # Step 7: Build and Push Docker Images
+      # Step 8: Build and Push React Docker Image if changes were detected
       - name: Build and Push React App Image
+        if: env.react_changed == 'true'
         run: |
-          docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-react-todo:${{ env.new-version }} react/pern-todo-app
-          docker push ghcr.io/${{ env.owner_lowercase }}/pern-react-todo:${{ env.new-version }}
+          docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-react-todo:${{ env.react-new-version }} react/pern-todo-app
+          docker push ghcr.io/${{ env.owner_lowercase }}/pern-react-todo:${{ env.react-new-version }}
 
+      # Step 9: Check for changes in express folder
+      - name: Check for changes in express
+        id: check_express_changes
+        run: |
+          git fetch --depth=2
+          if git diff --quiet HEAD^ HEAD -- express; then
+            echo "No changes in express"
+            echo "express_changed=false" >> $GITHUB_ENV
+          else
+            echo "Changes detected in express"
+            echo "express_changed=true" >> $GITHUB_ENV
+          fi
+
+      # Step 7: Get the latest version of express image if changes were detected
+      - name: Fetch the latest version tag for express image
+        if: env.express_changed == 'true'
+        id: express_version
+        run: |
+          EXPRESS_TAGS=$(gh api \
+            -H "Accept: application/vnd.github.v3+json" \
+            /user/packages/container/pern-express-todo/versions \
+            | jq -r '.[].metadata.container.tags[]')
+
+          LATEST_EXPRESS_VERSION=$(echo "$EXPRESS_TAGS" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
+          EXPRESS_VERSION=${LATEST_EXPRESS_VERSION:-"v0.0.0"}
+
+          IFS='.' read -r MAJOR MINOR PATCH <<<"${EXPRESS_VERSION#v}"
+          NEW_EXPRESS_VERSION="v$MAJOR.$MINOR.$((PATCH + 1))"
+
+          echo "New version: $NEW_EXPRESS_VERSION"
+          echo "express-new-version=$NEW_EXPRESS_VERSION" >> $GITHUB_ENV
+
+      # Step 8: Build and Push Express Docker Image if changes were detected
       - name: Build and Push Express App Image
+        if: env.express_changed == 'true'
         run: |
-          docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-express-todo:${{ env.new-version }} express
-          docker push ghcr.io/${{ env.owner_lowercase }}/pern-express-todo:${{ env.new-version }}
+          docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-express-todo:${{ env.express-new-version }} express
+          docker push ghcr.io/${{ env.owner_lowercase }}/pern-express-todo:${{ env.express-new-version }}
 
+      # Step 7: Check for changes in postgres folder
+      - name: Check for changes in postgres
+        id: check_postgres_changes
+        run: |
+          git fetch --depth=2
+          if git diff --quiet HEAD^ HEAD -- postgres; then
+            echo "No changes in postgres"
+            echo "postgres_changed=false" >> $GITHUB_ENV
+          else
+            echo "Changes detected in postgres"
+            echo "postgres_changed=true" >> $GITHUB_ENV
+          fi
+
+      # Step 7: Get the latest version of postgres image if changes were detected
+      - name: Fetch the latest version tag for postgres image
+        if: env.react_changed == 'true'
+        id: postgres_version
+        run: |
+          POSTGRES_TAGS=$(gh api \
+            -H "Accept: application/vnd.github.v3+json" \
+            /user/packages/container/pern-react-todo/versions \
+            | jq -r '.[].metadata.container.tags[]')
+
+          LATEST_POSTGRES_VERSION=$(echo "$POSTGRES_TAGS" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
+          POSTGRES_VERSION=${LATEST_POSTGRES_VERSION:-"v0.0.0"}
+
+          IFS='.' read -r MAJOR MINOR PATCH <<<"${POSTGRES_VERSION#v}"
+          NEW_POSTGRES_VERSION="v$MAJOR.$MINOR.$((PATCH + 1))"
+
+          echo "New version: $NEW_POSTGRES_VERSION"
+          echo "react-new-version=$NEW_POSTGRES_VERSION" >> $GITHUB_ENV
+
+      # Step 8: Build and Push Postgres Docker Image if changes were detected
       - name: Build and Push Postgres Image
+        if: env.postgres_changed == 'true'
         run: |
           docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-postgres-todo:${{ env.new-version }} postgres
           docker push ghcr.io/${{ env.owner_lowercase }}/pern-postgres-todo:${{ env.new-version }}
