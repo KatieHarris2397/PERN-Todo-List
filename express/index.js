@@ -7,6 +7,7 @@ var app = express();
 app.use(cors());
 app.use(express.json());
 
+// Standard Express port
 const port = 3000;
 
 // Connect to the postgres database
