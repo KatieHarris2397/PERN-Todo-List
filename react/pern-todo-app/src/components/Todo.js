@@ -75,7 +75,7 @@ function Todo() {
                 setEditableId(null);
                 setEditedTask("");
                 setEditedStatus("");
-                setEditedDeadline(""); // Clear the edited deadline
+                setEditedDeadline("");
                 window.location.reload();
             })
             .catch(err => console.log(err));
