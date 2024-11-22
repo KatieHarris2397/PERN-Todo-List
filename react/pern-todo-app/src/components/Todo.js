@@ -111,6 +111,20 @@ function Todo() {
         return formattedDate;
     }
 
+    const formatForDatetimeLocal = (date) => {
+        // Extract year, month, and day
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const day = String(date.getDate()).padStart(2, '0');
+
+        // Extract hours and minutes
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+
+        // Combine into 'YYYY-MM-DDTHH:mm'
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    };
+
     return (
         <div className="container mt-5">
             <div className="row">
@@ -163,7 +177,7 @@ function Todo() {
                                                         onChange={(e) => setEditedDeadline(getFormattedTimestamp(e.target.value))}
                                                     />
                                                 ) : (
-                                                    data.deadline ? getFormattedTimestamp(new Date(data.deadline).toLocaleString()) : ''
+                                                    data.deadline ? formatForDatetimeLocal(new Date(data.deadline)) : ''
                                                 )}
                                             </td>
 
