@@ -94,6 +94,23 @@ function Todo() {
             )
     }
 
+    function getFormattedTimestamp(inputDateTime) {
+        // Convert the input value (string 'YYYY-MM-DDTHH:MM') into a Date object
+        const date = new Date(inputDateTime);  // Automatically considers local time
+
+        // Get the local time zone offset (in minutes) and convert it to hours and minutes
+        const offsetMinutes = date.getTimezoneOffset();
+        const offsetSign = offsetMinutes > 0 ? "-" : "+"; // Check if it's ahead or behind UTC
+        const offsetHours = String(Math.floor(Math.abs(offsetMinutes) / 60)).padStart(2, "0");
+        const offsetMinutesFormatted = String(Math.abs(offsetMinutes) % 60).padStart(2, "0");
+        const timeZoneOffset = `${offsetSign}${offsetHours}:${offsetMinutesFormatted}`;
+
+        // Format the date to the desired output (YYYY-MM-DDTHH:MM:SS+XX:XX)
+        const formattedDate = `${date.toISOString().slice(0, 16)}${timeZoneOffset}`;
+
+        return formattedDate;
+    }
+
     return (
         <div className="container mt-5">
             <div className="row">
@@ -143,7 +160,7 @@ function Todo() {
                                                         type="datetime-local"
                                                         className="form-control"
                                                         value={editedDeadline}
-                                                        onChange={(e) => setEditedDeadline(e.target.value)}
+                                                        onChange={(e) => setEditedDeadline(getFormattedTimestamp(e.target.value))}
                                                     />
                                                 ) : (
                                                     data.deadline ? new Date(data.deadline).toLocaleString() : ''
