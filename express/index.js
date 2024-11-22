@@ -9,6 +9,7 @@ app.use(express.json());
 
 const port = 3000;
 
+// Connect to the postgres database
 const pool = new Pool({
     user: process.env.POSTGRES_USERNAME,
     host: process.env.POSTGRES_HOST,
