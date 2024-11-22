@@ -11,7 +11,7 @@ COPY default.conf.template /etc/nginx/conf.d/default.conf.template
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Expose port 80
+# Expose port 80 for Nginx
 EXPOSE 80
 
 # Substitute the environment variables in the nginx configuration template and start nginx
