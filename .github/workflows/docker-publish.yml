@@ -39,18 +39,42 @@ jobs:
           npm run build # Build the React app
           cd ../../ # Return to home directory
 
-      # Step 5: Build and Push Docker Images
+      # Step 5: Install gh CLI
+      - name: Install gh CLI
+        run: |
+          sudo apt update
+          sudo apt install -y gh
+
+      # Step 6: Get the latest version
+      - name: Fetch the latest version tag
+        id: version
+        run: |
+          TAGS=$(gh api \
+            -H "Accept: application/vnd.github.v3+json" \
+            /user/packages/container/${{ github.repository }}/versions \
+            | jq -r '.[].metadata.container.tags[]')
+
+          LATEST_VERSION=$(echo "$TAGS" | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1)
+          VERSION=${LATEST_VERSION:-"v0.0.0"}
+
+          IFS='.' read -r MAJOR MINOR PATCH <<<"${VERSION#v}"
+          NEW_VERSION="v$MAJOR.$MINOR.$((PATCH + 1))"
+
+          echo "New version: $NEW_VERSION"
+          echo "new-version=$NEW_VERSION" >> $GITHUB_ENV
+
+      # Step 7: Build and Push Docker Images
       - name: Build and Push React App Image
         run: |
-          docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-react-todo:latest react/pern-todo-app
-          docker push ghcr.io/${{ env.owner_lowercase }}/pern-react-todo:latest
+          docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-react-todo:${{ env.new-version }} react/pern-todo-app
+          docker push ghcr.io/${{ env.owner_lowercase }}/pern-react-todo:${{ env.new-version }}
 
       - name: Build and Push Express App Image
         run: |
-          docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-express-todo:latest express
-          docker push ghcr.io/${{ env.owner_lowercase }}/pern-express-todo:latest
+          docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-express-todo:${{ env.new-version }} express
+          docker push ghcr.io/${{ env.owner_lowercase }}/pern-express-todo:${{ env.new-version }}
 
       - name: Build and Push Postgres Image
         run: |
-          docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-postgres-todo:latest postgres
-          docker push ghcr.io/${{ env.owner_lowercase }}/pern-postgres-todo:latest
+          docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-postgres-todo:${{ env.new-version }} postgres
+          docker push ghcr.io/${{ env.owner_lowercase }}/pern-postgres-todo:${{ env.new-version }}
