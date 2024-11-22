@@ -26,18 +26,23 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Step 3: Build and Push Docker Images
+      # Step 3: Convert repository owner to lowercase (docker image names must all be lowercase)
+      - name: Set repository owner lowercase
+        id: owner_lowercase
+        run: echo "owner_lowercase=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      # Step 4: Build and Push Docker Images
       - name: Build and Push React App Image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/pern-react-todo:latest react/pern-todo-app
-          docker push ghcr.io/${{ github.repository_owner }}/pern-react-todo:latest
+          docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-react-todo:latest react/pern-todo-app
+          docker push ghcr.io/${{ env.owner_lowercase }}/pern-react-todo:latest
 
       - name: Build and Push Express App Image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/pern-express-todo:latest express
-          docker push ghcr.io/${{ github.repository_owner }}/pern-express-todo:latest
+          docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-express-todo:latest express
+          docker push ghcr.io/${{ env.owner_lowercase }}/pern-express-todo:latest
 
       - name: Build and Push Postgres Image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/pern-postgres-todo:latest postgres
-          docker push ghcr.io/${{ github.repository_owner }}/pern-postgres-todo:latest
+          docker build -t ghcr.io/${{ env.owner_lowercase }}/pern-postgres-todo:latest postgres
+          docker push ghcr.io/${{ env.owner_lowercase }}/pern-postgres-todo:latest
