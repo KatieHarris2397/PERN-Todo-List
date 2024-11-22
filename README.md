@@ -3,45 +3,23 @@ Simple PERN todo list app (similar to my MERN todo list app but with Postgres in
 
 ## Getting Started
 
-### Prerequisites
-
-- Node.js (version 14 or higher)
-- npm (Node Package Manager)
-- Docker: Required for containerizing the application
-
-### Installation
+NOTICE: This repository includes a Github actions workflow that builds and pushes the project's Docker images to the Github Container Registry (GHCR) 
 
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/KatieHarris2397/PERN-Todo-List.git
    cd PERN-Todo-List
    ```
-2. **Navigate to react/pern-todo-app and install dependencies**:
+2. **Navigate to Nexlayer folder**:
    ```bash
-   cd react/pern-todo-app
-   npm install
+   cd Nexlayer
    ```
-3. **Create a React build**:
+3. **Update the registryLogin information to be your own**:
+
+4. **Commit your updates to Main branch to begin building and pushing images to GHCR**:
    ```bash
-   npm run build
+   git add .
+   git commit -m "Updated Nexlayer template"
+   git push
    ```
-4. **Build Docker container for frontend**:
-   ```bash
-   docker build -t pern-react-todo:latest .
-   ```
-5. **Navigate to express folder**:
-   ```bash
-   cd ../../express
-   ```
-6. **Build Docker container for backend**:
-   ```bash
-   docker build -t pern-express-todo:latest .
-   ```
-7. **Navigate to postgres folder**:
-   ```bash
-   cd ../postgres
-   ```
-8. **Build Docker container for postgres**:
-   ```bash
-   docker build -t pern-postgres-todo:latest .
-   ```
+5. **Wait for Github action workflow to complete before submitting template to Nexlayer**
