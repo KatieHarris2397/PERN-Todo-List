@@ -28,13 +28,11 @@ jobs:
 
       # Step 3: Convert repository owner to lowercase (docker image names must all be lowercase)
       - name: Set repository owner lowercase
-        if: ${{ env.react_changed == 'true' || env.express_changed == 'true' || env.postgres_changed == 'true' }}
         id: owner_lowercase
         run: echo "owner_lowercase=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
 
       # Step 4: Build the React app
       - name: Install and Build React App
-        if: env.react_changed == 'true'
         run: |
           cd react/pern-todo-app
           npm ci # Install dependencies (prefer ci for CI environments)
