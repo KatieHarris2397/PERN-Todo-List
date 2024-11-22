@@ -163,7 +163,7 @@ function Todo() {
                                                         onChange={(e) => setEditedDeadline(getFormattedTimestamp(e.target.value))}
                                                     />
                                                 ) : (
-                                                    data.deadline ? new Date(data.deadline).toLocaleString() : ''
+                                                    data.deadline ? getFormattedTimestamp(new Date(data.deadline).toLocaleString()) : ''
                                                 )}
                                             </td>
 
