@@ -98,32 +98,20 @@ function Todo() {
         // Convert the input value (string 'YYYY-MM-DDTHH:MM') into a Date object
         const date = new Date(inputDateTime);  // Automatically considers local time
 
-        // Get the local time zone offset (in minutes) and convert it to hours and minutes
-        const offsetMinutes = date.getTimezoneOffset();
-        const offsetSign = offsetMinutes > 0 ? "-" : "+"; // Check if it's ahead or behind UTC
-        const offsetHours = String(Math.floor(Math.abs(offsetMinutes) / 60)).padStart(2, "0");
-        const offsetMinutesFormatted = String(Math.abs(offsetMinutes) % 60).padStart(2, "0");
-        const timeZoneOffset = `${offsetSign}${offsetHours}:${offsetMinutesFormatted}`;
+        //// Get the local time zone offset (in minutes) and convert it to hours and minutes
+        //const offsetMinutes = date.getTimezoneOffset();
+        //const offsetSign = offsetMinutes > 0 ? "-" : "+"; // Check if it's ahead or behind UTC
+        //const offsetHours = String(Math.floor(Math.abs(offsetMinutes) / 60)).padStart(2, "0");
+        //const offsetMinutesFormatted = String(Math.abs(offsetMinutes) % 60).padStart(2, "0");
+        //const timeZoneOffset = `${offsetSign}${offsetHours}:${offsetMinutesFormatted}`;
 
-        // Format the date to the desired output (YYYY-MM-DDTHH:MM:SS+XX:XX)
-        const formattedDate = `${date.toISOString().slice(0, 16)}${timeZoneOffset}`;
+        //// Format the date to the desired output (YYYY-MM-DDTHH:MM:SS+XX:XX)
+        //const formattedDate = `${date.toISOString().slice(0, 16)}${timeZoneOffset}`;
+
+        const formattedDate = date.toISOString();
 
         return formattedDate;
     }
-
-    const formatForDatetimeLocal = (date) => {
-        // Extract year, month, and day
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-        const day = String(date.getDate()).padStart(2, '0');
-
-        // Extract hours and minutes
-        const hours = String(date.getHours()).padStart(2, '0');
-        const minutes = String(date.getMinutes()).padStart(2, '0');
-
-        // Combine into 'YYYY-MM-DDTHH:mm'
-        return `${year}-${month}-${day}T${hours}:${minutes}`;
-    };
 
     return (
         <div className="container mt-5">
@@ -177,7 +165,7 @@ function Todo() {
                                                         onChange={(e) => setEditedDeadline(getFormattedTimestamp(e.target.value))}
                                                     />
                                                 ) : (
-                                                    data.deadline ? formatForDatetimeLocal(new Date(data.deadline)) : ''
+                                                        data.deadline ? new Date(data.deadline).toLocaleString() : ''
                                                 )}
                                             </td>
 
