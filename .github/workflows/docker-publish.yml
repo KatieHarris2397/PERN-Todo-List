@@ -1,9 +1,9 @@
-name: On Change, Build and Push PERN Docker Images to GHCR
+name: On Tag, Build and Push PERN Docker Images to GHCR
 
 on:
   push:
     tags:
-      - 'v*'
+      - '*'
 
 jobs:
   build-and-push:
