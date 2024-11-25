@@ -12,7 +12,7 @@ NOTICE: This repository includes mutiple Github actions workflows that builds an
   This will start the Github actions workflow to build, tag and push the Docker images for this repostory to your Github Container Registry
 5. **Clone the repository**:
    ```bash
-   git clone https://github.com/KatieHarris2397/PERN-Todo-List.git
+   git clone <Github-repository-URL>
    cd PERN-Todo-List
    ```
 6. **Navigate to Nexlayer folder and open nexlayer-template.yaml in your favorite editor**:
@@ -30,7 +30,7 @@ NOTICE: This repository includes mutiple Github actions workflows that builds an
 
 NOTICE: You will need to tag the commit you would like the images built for to start the Github actions workflow
 
-1. **After creating the commit with the changes you would like built into Docker images, tag the commit with the name of the tag you would like to give your Docker image**:
+1. **After creating the commit with the changes you would like built into Docker images, tag the commit with the name of the tag you would like to give your Docker images**:
   ```bash
   git tag <tag-name>
   ```
