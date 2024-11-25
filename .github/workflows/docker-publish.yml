@@ -1,4 +1,4 @@
-name: On tag, Build and Push PERN Docker Images to GHCR
+name: On Tag, Build and Push PERN Docker Images to GHCR
 
 on:
   push:
