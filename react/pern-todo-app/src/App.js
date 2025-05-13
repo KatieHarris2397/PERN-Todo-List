@@ -6,6 +6,7 @@ import Todo from './components/Todo';
 function App() {
     const headStyle = {
         textAlign: "center",
+        backgroundColor: "purple"
     }
     return (
         <div>
