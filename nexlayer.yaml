@@ -1,0 +1,32 @@
+application:
+  name: PERN App
+  pods:
+    - name: postgres
+      image: katieharris/pern-postgres-todo:latest
+      vars:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: passw0rd
+        POSTGRES_DB: todo
+        PGDATA: /var/lib/postgresql/data
+      servicePorts:
+        - 5432
+      volumes:
+        - name: pg-data-volume
+          size: 2Gi
+          mountPath: /var/lib/postgresql
+    - name: express
+      image: katieharris/pern-express-todo:latest
+      vars:
+        POSTGRES_HOST: postgres.pod
+        POSTGRES_USERNAME: postgres
+        POSTGRES_PASSWORD: passw0rd
+        POSTGRES_DB: todo
+      servicePorts:
+        - 3000
+    - name: react
+      path: /
+      image: katieharris/pern-react-todo:latest
+      vars:
+        EXPRESS_URL: http://express.pod:3000
+      servicePorts:
+        - 80
