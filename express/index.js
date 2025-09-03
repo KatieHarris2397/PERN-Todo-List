@@ -7,8 +7,8 @@ var app = express();
 app.use(cors());
 app.use(express.json());
 
-// Standard Express port
-const port = 3000;
+// Standard Express port - configurable for deployment
+const port = process.env.PORT || 3000;
 
 // Connect to the postgres database
 const pool = new Pool({
