@@ -1,8 +1,27 @@
-# Serve the React app using nginx
+# Multi-stage build for React app
+# Stage 1: Build the React app
+FROM node:18-alpine AS build
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy source code
+COPY . .
+
+# Build the app
+RUN npm run build
+
+# Stage 2: Serve with nginx
 FROM nginx:alpine
 
-# Copy the build output to the nginx HTML directory
-COPY build /usr/share/nginx/html
+# Copy the build output to nginx HTML directory
+COPY --from=build /app/build /usr/share/nginx/html
 
 # Copy the nginx configuration template file
 COPY default.conf.template /etc/nginx/conf.d/default.conf.template
