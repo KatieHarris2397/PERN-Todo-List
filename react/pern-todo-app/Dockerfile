@@ -1,37 +1,27 @@
-# Multi-stage build for React app
-# Stage 1: Build the React app
+# Build stage
 FROM node:18-alpine AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files and install dependencies
 COPY package*.json ./
-
-# Install dependencies
 RUN npm ci
 
-# Copy source code
+# Copy source code and build
 COPY . .
-
-# Build the app
 RUN npm run build
 
-# Stage 2: Serve with nginx
+# Production stage
 FROM nginx:alpine
 
-# Copy the build output to nginx HTML directory
+# Copy built React app to nginx html directory
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Copy the nginx configuration template file
-COPY default.conf.template /etc/nginx/conf.d/default.conf.template
+# Copy nginx configuration
+COPY default.conf /etc/nginx/conf.d/default.conf
 
-# Copy in entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-# Expose port 80 for Nginx
+# Expose port 80
 EXPOSE 80
 
-# Substitute the environment variables in the nginx configuration template and start nginx
-CMD ["/entrypoint.sh"]
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
